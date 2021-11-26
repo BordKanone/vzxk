@@ -1,9 +1,15 @@
 import React from "react";
 
+function sayHello(props){
+    return `${props} - say hello`
+}
+
 class Clock extends React.Component {
     constructor(props){
         super(props)
         this.state = {currentTime: (new Date()).toLocaleString()}}
+
+        
 
     componentDidMount(){
         this.timerId=setInterval(() => {
@@ -15,7 +21,8 @@ class Clock extends React.Component {
     }
     render(){
         return(
-            <div>{this.state.currentTime}</div>)} 
+            <div>{this.state.currentTime}</div>
+            )} 
 }
 
 export default Clock;

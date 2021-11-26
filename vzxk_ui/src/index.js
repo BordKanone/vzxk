@@ -1,14 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Clock from './clock';
 import reportWebVitals from './reportWebVitals';
-import PersonGet from './SimpleCustomers'
+import './components/styles/posts.css';
+import App from './App';
+
+
 
 ReactDOM.render(
-  <React.StrictMode>
-   <PersonGet/>
-  </React.StrictMode>,
+  <div>
+	    <App/>
+  </div>,
   document.getElementById('root')
 );
 

@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#root {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+
+
+.post {
+    margin-top: 15px;
+    display: flex;
+    width: 800px;
+    padding: 10px;
+    border: solid;
+    border-radius: 12px;
+    flex-direction: row;
+    justify-content: space-between;    
+}
+
+.post__btn {
+    display: flex;
+    align-items: center;
+    align-content: center;
+}
