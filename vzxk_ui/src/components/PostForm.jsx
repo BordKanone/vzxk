@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import FormButton from "./ui/FormButton";
+import FormButton from "./ui/FormButton/FormButton";
 import FormInput from "./ui/input/FormInput";
 
 
