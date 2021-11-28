@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #3dth party library
     'rest_framework',
-    # 'corsheaders',
+    'corsheaders',
     # general develop application
     'vzxk.apps.VzxkConfig',
 ]
@@ -55,12 +55,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware'
 ]
-#
-# CORS_ORIGIN_ALLOW_ALL = False
-#
-# CORS_ORIGIN_WHITELIST = (
-#        'http://localhost:3000',
-# )
+
+CORS_ORIGIN_ALLOW_ALL = False
+
+CORS_ORIGIN_WHITELIST = (
+       'http://localhost:3000',
+)
 
 ROOT_URLCONF = 'config.urls'
 
