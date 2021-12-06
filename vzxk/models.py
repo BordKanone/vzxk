@@ -76,29 +76,13 @@ class Contracts(models.Model):
         ordering = ('name',)
 
 
-class ProductOrder(Product):
-    """ Продукт для заказа """
-    number = models.PositiveIntegerField(max_length=4, verbose_name='Количество',
-                                         validators=[
-                                             validators.MinValueValidator(limit_value=1,
-                                                                          message='Количество не может быть '
-                                                                                  'меньше одного ')])
-
-    def __str__(self):
-        return f'{self.number}'
-
-    class Meta:
-        verbose_name = 'Продукт заказа'
-        verbose_name_plural = 'Продукты заказа'
-
-
 class Order(models.Model):
     code = models.CharField(max_length=10,
                             db_index=True, unique=True, blank=False, null=False,
                             verbose_name='Номер заказа')
     contragent = models.ForeignKey(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
-    product = models.ManyToManyField(ProductOrder, verbose_name='Продукт')
+    product = models.ForeignKey(Product,on_delete=models.CASCADE ,blank=True, null=True)
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
@@ -107,13 +91,12 @@ class Order(models.Model):
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
 
     def save(self, *args, **kwargs):
-        self.total_price = self.number * self.product.price
         self.address_to = self.contragent.real_address
         self.date_complete = datetime.datetime.now() + datetime.timedelta(days=2)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'{self.code} - {self.product.name} to {self.contragent.name}'
+        return f'{self.code}'
 
     class Meta:
         verbose_name = 'Заказ'

@@ -11,8 +11,7 @@ from .serializers import (SimpleCustomersSerializer,
                           OrderSerializer,
                           ProductSerializer,
                           ContractsSerializer,
-                          ContragentSerializer,
-                          ProductOrderSerializer)
+                          ContragentSerializer,)
 from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -37,11 +36,6 @@ class SpecialCodeApiView(generics.ListCreateAPIView):
 class OrderApiView(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
-    action_to_serializer = {
-        'list': ProductOrderSerializer,
-        'retrieve': ProductOrderSerializer
-    }
 
     @action(detail=True, methods=['post', 'put'])
     def get_list_orders(self, request, pk=None):

@@ -5,8 +5,7 @@ from .models import (
     Order,
     Contragent,
     Contracts,
-    Product,
-    ProductOrder)
+    Product)
 
 
 class SimpleCustomersSerializer(serializers.ModelSerializer):
@@ -15,7 +14,15 @@ class SimpleCustomersSerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'three_name', 'avatar', 'about')
 
 
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+
 class OrderSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
     class Meta:
         model = Order
         fields = "__all__"
@@ -33,19 +40,7 @@ class ContractsSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = "__all__"
-
-
 class SpecialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = QRCode
-        fields = "__all__"
-
-
-class ProductOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductOrder
         fields = "__all__"
