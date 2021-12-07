@@ -5,7 +5,8 @@ from .models import (
     Order,
     Contragent,
     Contracts,
-    Product)
+    Product,
+    ProductForOrder)
 
 
 class SimpleCustomersSerializer(serializers.ModelSerializer):
@@ -20,11 +21,11 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class ProductForOrderSerializer(serializers.ModelSerializer):
     product = ProductSerializer()
 
     class Meta:
-        model = Order
+        model = ProductForOrder
         fields = "__all__"
 
 
@@ -32,6 +33,21 @@ class ContragentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contragent
         fields = "__all__"
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    products = ProductForOrderSerializer(many=True)
+    contragent = ContragentSerializer()
+
+    class Meta:
+        model = Order
+        fields = "__all__"
+
+    def create(self, validated_data):
+        products = validated_data.pop('products')
+        order = Order.objects.create(**validated_data)
+        ProductForOrder.objects.create(**products)
+        return order
 
 
 class ContractsSerializer(serializers.ModelSerializer):

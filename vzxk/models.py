@@ -43,6 +43,20 @@ class Product(models.Model):
         ordering = ('name',)
 
 
+class ProductForOrder(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, blank=True, verbose_name='Продукт')
+    numbers = models.PositiveIntegerField(null=True, blank=True, verbose_name='Колличество')
+    date_create = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.product}'
+
+    class Meta:
+        verbose_name = 'Продукт для заказа'
+        verbose_name_plural = 'Продукция для заказка'
+        ordering = ('product',)
+
+
 class Contragent(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование')
@@ -82,7 +96,7 @@ class Order(models.Model):
                             verbose_name='Номер заказа')
     contragent = models.ForeignKey(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
-    product = models.ForeignKey(Product,on_delete=models.CASCADE ,blank=True, null=True)
+    products = models.ManyToManyField(ProductForOrder, blank=True, null=True)
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
