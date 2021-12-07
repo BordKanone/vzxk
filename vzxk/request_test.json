@@ -1,0 +1,14 @@
+{
+  "products": [{
+    "product" : {"id":  1},
+    "number": "2"
+}],
+    "contragent": {
+      "id": 2
+    },
+    "code": "00004",
+    "address_to": "",
+    "number": null,
+    "total_price": null,
+    "date_complete": "2021-12-09T15:17:37.367937Z"
+}

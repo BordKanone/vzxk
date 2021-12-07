@@ -106,6 +106,7 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         self.address_to = self.contragent.real_address
+        self.total_price = self.productfororder_set.number * self.productfororder_set.product_set.price
         self.date_complete = datetime.datetime.now() + datetime.timedelta(days=2)
         super().save(*args, **kwargs)
 
