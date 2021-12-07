@@ -9,6 +9,12 @@ from .models import (
     ProductForOrder)
 
 
+class SpecialCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QRCode
+        fields = ('qr_code',)
+
+
 class SimpleCustomersSerializer(serializers.ModelSerializer):
     class Meta:
         model = SimpleCustomers
@@ -16,6 +22,8 @@ class SimpleCustomersSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    code = SpecialCodeSerializer()
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -29,10 +37,16 @@ class ProductForOrderSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class ContractsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contracts
+        fields = "__all__"
+
+
 class ContragentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contragent
-        fields = "__all__"
+        fields = ("id", "name", "real_name", "real_address",)
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -48,15 +62,3 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
         ProductForOrder.objects.create(**products)
         return order
-
-
-class ContractsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contracts
-        fields = "__all__"
-
-
-class SpecialCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QRCode
-        fields = "__all__"

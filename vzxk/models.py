@@ -19,10 +19,10 @@ class SimpleCustomers(AbstractUser):
 
 
 class QRCode(models.Model):
-    code = models.CharField(max_length=14, verbose_name='Штрих-код')
+    qr_code = models.CharField(max_length=14, verbose_name='Штрих-код')
 
     def __str__(self):
-        return f'{self.code}'
+        return f'{self.qr_code}'
 
 
 class Product(models.Model):
@@ -82,7 +82,7 @@ class Contracts(models.Model):
     document = models.FileField(upload_to='contracts/%Y/%m/%d/', verbose_name='Файл договора')
 
     def __str__(self):
-        return f'{self.name} - {self.code}'
+        return f'{self.code}'
 
     class Meta:
         verbose_name = 'Договор'
@@ -96,7 +96,7 @@ class Order(models.Model):
                             verbose_name='Номер заказа')
     contragent = models.ForeignKey(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
-    products = models.ManyToManyField(ProductForOrder, blank=True, null=True)
+    products = models.ManyToManyField(ProductForOrder)
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
