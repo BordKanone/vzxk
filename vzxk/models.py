@@ -1,7 +1,5 @@
 import datetime
 from django.conf import settings
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
@@ -28,7 +26,6 @@ class QRCode(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Наименование')
     code = models.OneToOneField(QRCode, on_delete=models.CASCADE, verbose_name='Штрих-код продукта')
-    special_code = models.CharField(max_length=14, db_index=True, verbose_name='Код номенклатуры')
     price = models.DecimalField(verbose_name='цена', max_digits=3, decimal_places=2,
                                 validators=[validators.MinValueValidator(limit_value=1.00, message='Неверная цена')])
 
@@ -43,27 +40,12 @@ class Product(models.Model):
         ordering = ('name',)
 
 
-class ProductForOrder(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING, null=True, blank=True, verbose_name='Продукт')
-    numbers = models.PositiveIntegerField(null=True, blank=True, verbose_name='Колличество')
-    date_create = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.product}'
-
-    class Meta:
-        verbose_name = 'Продукт для заказа'
-        verbose_name_plural = 'Продукция для заказка'
-        ordering = ('product',)
-
-
 class Contragent(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование')
     real_name = models.CharField(max_length=255, blank=False, null=False, verbose_name='Физическое ФИО')
     ur_address = models.CharField(max_length=255, verbose_name='Юридический адрес')
     real_address = models.CharField(max_length=255, blank=False, null=False, verbose_name='Физический адрес')
-    code = models.CharField(max_length=5, blank=False, null=False, verbose_name='Код номенклатуры')
     contract_number = models.ForeignKey('Contracts', on_delete=models.CASCADE,
                                         db_index=True, blank=False, null=False, verbose_name='Номер договора')
 
@@ -78,7 +60,6 @@ class Contragent(models.Model):
 
 class Contracts(models.Model):
     name = models.OneToOneField(Contragent, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Контрагент')
-    code = models.CharField(max_length=22, verbose_name='Номер договора')
     document = models.FileField(upload_to='contracts/%Y/%m/%d/', verbose_name='Файл договора')
 
     def __str__(self):
@@ -91,12 +72,9 @@ class Contracts(models.Model):
 
 
 class Order(models.Model):
-    code = models.CharField(max_length=10,
-                            db_index=True, unique=True, blank=False, null=False,
-                            verbose_name='Номер заказа')
     contragent = models.ForeignKey(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
-    products = models.ManyToManyField(ProductForOrder)
+    products = models.ManyToManyField(Product)
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
@@ -104,14 +82,8 @@ class Order(models.Model):
     date_order = models.DateTimeField(auto_now=True, verbose_name='Дата поступления')
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
 
-    def save(self, *args, **kwargs):
-        self.address_to = self.contragent.real_address
-        self.total_price = self.productfororder_set.number * self.productfororder_set.product_set.price
-        self.date_complete = datetime.datetime.now() + datetime.timedelta(days=2)
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return f'{self.code}'
+        return f'Заказ: {self.pk}'
 
     class Meta:
         verbose_name = 'Заказ'

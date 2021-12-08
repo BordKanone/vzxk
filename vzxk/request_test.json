@@ -1,14 +1,19 @@
 {
   "products": [{
-    "product" : {"id":  1},
+    "product" : { "id": 1,
+                    "code": {
+                        "qr_code": "4605538011410"
+                    },
+                    "name": "Изделие хлебобулочное из смеси ржаной и пшеничной муки хлеб заварной с солодом и кориандром в упаков",
+                    "special_code": "00000000000001",
+                    "price": "4.52",
+                    "package": true},
     "number": "2"
 }],
-    "contragent": {
-      "id": 2
-    },
     "code": "00004",
     "address_to": "",
     "number": null,
     "total_price": null,
-    "date_complete": "2021-12-09T15:17:37.367937Z"
+    "date_complete": "2021-12-09T15:17:37.367937Z",
+    "contragent": 1
 }

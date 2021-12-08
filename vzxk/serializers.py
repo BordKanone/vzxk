@@ -5,8 +5,8 @@ from .models import (
     Order,
     Contragent,
     Contracts,
-    Product,
-    ProductForOrder)
+    Product
+    )
 
 
 class SpecialCodeSerializer(serializers.ModelSerializer):
@@ -22,18 +22,9 @@ class SimpleCustomersSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    code = SpecialCodeSerializer()
 
     class Meta:
         model = Product
-        fields = "__all__"
-
-
-class ProductForOrderSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
-
-    class Meta:
-        model = ProductForOrder
         fields = "__all__"
 
 
@@ -50,15 +41,7 @@ class ContragentSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    products = ProductForOrderSerializer(many=True)
-    contragent = ContragentSerializer()
-
     class Meta:
         model = Order
         fields = "__all__"
-
-    def create(self, validated_data):
-        products = validated_data.pop('products')
-        order = Order.objects.create(**validated_data)
-        ProductForOrder.objects.create(**products)
-        return order
+        depth = 1

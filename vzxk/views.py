@@ -34,15 +34,32 @@ class SpecialCodeApiView(generics.ListCreateAPIView):
 
 
 class OrderApiView(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
-    @action(detail=True, methods=['post', 'put'])
-    def get_list_orders(self, request, pk=None):
-        order = self.get_object()
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            order.number = len(serializer.validated_data(['product']))
-            order.save()
-            return Response(serializer.data, status=HTTP_201_CREATED)
-        return Response(serializer.data, status=HTTP_400_BAD_REQUEST)
+    def get_queryset(self):
+        order = Order.objects.all()
+        return order
+
+    def create(self, request, *args, **kwargs):
+
+        data = request.data
+        deliver_address = data['contragent']['real_address']
+        contragent = Contragent.objects.get(pk=data['contragent']['id'])
+        number = len(data['products'])
+        new_order = Order.objects.create(contragent=contragent, address_to=deliver_address, number=number)
+        new_order.save()
+
+        for product in data['products']:
+            product_obj = Product.objects.get(id=product['id'])
+            new_order.products.add(product_obj)
+
+        serializer = OrderSerializer(new_order)
+        return Response(serializer.data)
+
+class ProductApiView(viewsets.ModelViewSet):
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        product = Product.objects.all()
+        return product
+
