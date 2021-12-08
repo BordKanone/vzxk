@@ -63,7 +63,7 @@ class Contracts(models.Model):
     document = models.FileField(upload_to='contracts/%Y/%m/%d/', verbose_name='Файл договора')
 
     def __str__(self):
-        return f'{self.code}'
+        return f'{self.pk}'
 
     class Meta:
         verbose_name = 'Договор'
@@ -74,13 +74,17 @@ class Contracts(models.Model):
 class Order(models.Model):
     contragent = models.ForeignKey(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
-    products = models.ManyToManyField(Product)
+    products = models.ManyToManyField('ProductForOrder')
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
                                                                                                           'заказа')
     date_order = models.DateTimeField(auto_now=True, verbose_name='Дата поступления')
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
+
+    def create(self, *args, **kwargs):
+        self.date_complete = self.date_order + datetime.timedelta(days=3)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Заказ: {self.pk}'
@@ -89,3 +93,8 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
         ordering = ('date_order', 'date_complete')
+
+
+class ProductForOrder(models.Model):
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+    numbers = models.PositiveIntegerField()

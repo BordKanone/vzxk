@@ -5,13 +5,14 @@ from .models import (SimpleCustomers,
                      Order,
                      Contragent,
                      Contracts,
-                     Product)
+                     Product,
+                     ProductForOrder)
 from .serializers import (SimpleCustomersSerializer,
                           SpecialCodeSerializer,
                           OrderSerializer,
                           ProductSerializer,
                           ContractsSerializer,
-                          ContragentSerializer,)
+                          ContragentSerializer, )
 from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -41,20 +42,23 @@ class OrderApiView(viewsets.ModelViewSet):
         return order
 
     def create(self, request, *args, **kwargs):
-
         data = request.data
         deliver_address = data['contragent']['real_address']
         contragent = Contragent.objects.get(pk=data['contragent']['id'])
         number = len(data['products'])
         new_order = Order.objects.create(contragent=contragent, address_to=deliver_address, number=number)
-        new_order.save()
 
+        total_price = 0
         for product in data['products']:
             product_obj = Product.objects.get(id=product['id'])
             new_order.products.add(product_obj)
+            total_price += product_obj.price
+            new_order.total_price = total_price
+        new_order.save()
 
         serializer = OrderSerializer(new_order)
         return Response(serializer.data)
+
 
 class ProductApiView(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
@@ -62,4 +66,3 @@ class ProductApiView(viewsets.ModelViewSet):
     def get_queryset(self):
         product = Product.objects.all()
         return product
-

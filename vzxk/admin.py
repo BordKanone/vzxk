@@ -5,7 +5,7 @@ from .models import (
     QRCode,
     Contragent,
     Order,
-    Contracts
+    Contracts, ProductForOrder
 )
 
 admin.site.register(SimpleCustomers)
@@ -14,5 +14,6 @@ admin.site.register(QRCode)
 admin.site.register(Contragent)
 admin.site.register(Order)
 admin.site.register(Contracts)
+admin.site.register(ProductForOrder)
 
 

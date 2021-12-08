@@ -5,8 +5,8 @@ from .models import (
     Order,
     Contragent,
     Contracts,
-    Product
-    )
+    Product, ProductForOrder
+)
 
 
 class SpecialCodeSerializer(serializers.ModelSerializer):
@@ -44,4 +44,10 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
-        depth = 1
+        depth = 2
+
+
+class ProductForOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductForOrder
+        fields = '__all__'
