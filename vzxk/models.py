@@ -40,22 +40,21 @@ class Product(models.Model):
         ordering = ('name',)
 
 
-class Contragent(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование')
-    real_name = models.CharField(max_length=255, blank=False, null=False, verbose_name='Физическое ФИО')
-    ur_address = models.CharField(max_length=255, verbose_name='Юридический адрес')
-    real_address = models.CharField(max_length=255, blank=False, null=False, verbose_name='Физический адрес')
-    contract_number = models.ForeignKey('Contracts', on_delete=models.CASCADE,
-                                        db_index=True, blank=False, null=False, verbose_name='Номер договора')
+class Contragent(AbstractUser):
+    company = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование организации')
+    three_name = models.CharField(max_length=255, verbose_name='Отчество')
+    inn = models.CharField(max_length=12, verbose_name='ИНН')
+    ogrn = models.CharField(max_length=13, verbose_name='ОГРН')
+    address = models.TextField(verbose_name='Адрес')
+    contract = models.OneToOneField('Contracts', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user}'
+        return f'{self.company}'
 
     class Meta:
         verbose_name = 'Контрагент'
         verbose_name_plural = 'Контрагенты'
-        ordering = ('name',)
+        ordering = ('company',)
 
 
 class Contracts(models.Model):
@@ -72,6 +71,9 @@ class Contracts(models.Model):
 
 
 class Order(models.Model):
+    """
+    TODO: check contragent relations
+    """
     contragent = models.OneToOneField(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
     products = models.ManyToManyField('ProductForOrder')
