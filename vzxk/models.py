@@ -72,7 +72,7 @@ class Contracts(models.Model):
 
 
 class Order(models.Model):
-    contragent = models.ForeignKey(Contragent, on_delete=models.CASCADE,
+    contragent = models.OneToOneField(Contragent, on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Заказчик')
     products = models.ManyToManyField('ProductForOrder')
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
