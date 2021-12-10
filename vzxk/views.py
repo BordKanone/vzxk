@@ -2,15 +2,13 @@ from django.shortcuts import render
 from rest_framework.generics import ListAPIView
 from .models import (QRCode,
                      Order,
-                     Contragent,
                      Contracts,
                      Product,
                      ProductForOrder)
 from .serializers import (SpecialCodeSerializer,
                           OrderSerializer,
                           ProductSerializer,
-                          ContractsSerializer,
-                          ContragentSerializer, )
+                          ContractsSerializer)
 from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -25,6 +23,9 @@ class SpecialCodeApiView(viewsets.ModelViewSet):
 
 
 class OrderApiView(viewsets.ModelViewSet):
+    """
+    TODO: Rebuilt contragent relation
+    """
     serializer_class = OrderSerializer
 
     def get_queryset(self):

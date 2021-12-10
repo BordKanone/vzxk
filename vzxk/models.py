@@ -1,6 +1,5 @@
 import datetime
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
@@ -63,22 +62,8 @@ class Product(models.Model):
         ordering = ('name',)
 
 
-class Contragent(AbstractUser):
-    three_name = models.CharField(max_length=255, verbose_name='Отчество')
-
-    address = models.TextField(verbose_name='Адрес')
-
-    def __str__(self):
-        return f'{self.company}'
-
-    class Meta:
-        verbose_name = 'Контрагент'
-        verbose_name_plural = 'Контрагенты'
-        ordering = ('company',)
-
-
 class Contracts(models.Model):
-    name = models.OneToOneField(Contragent, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Контрагент')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.DO_NOTHING)
     document = models.FileField(upload_to='contracts/%Y/%m/%d/', verbose_name='Файл договора')
 
     def __str__(self):
@@ -87,14 +72,12 @@ class Contracts(models.Model):
     class Meta:
         verbose_name = 'Договор'
         verbose_name_plural = 'Договора'
-        ordering = ('name',)
+        ordering = ('user',)
 
 
 class Order(models.Model):
-    customer = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey(ct_field='customer', fk_field='object_id')
-
+    customer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True,
+                                    verbose_name='Заказчик')
     products = models.ManyToManyField('ProductForOrder')
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
