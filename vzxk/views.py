@@ -46,7 +46,7 @@ class OrderApiView(viewsets.ModelViewSet):
         data = request.data
         deliver_address = data['contragent']['real_address']
         contragent = data['contragent']['id']
-        new_order = Order.objects.create(contragent=contragent, address_to=deliver_address)
+        new_order = Order.objects.create(customer=contragent, address_to=deliver_address)
 
         total_price = 0
         numbers = 0

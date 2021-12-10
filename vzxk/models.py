@@ -1,5 +1,6 @@
 import datetime
-from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
@@ -71,11 +72,10 @@ class Contracts(models.Model):
 
 
 class Order(models.Model):
-    """
-    TODO: check contragent relations
-    """
-    contragent = models.OneToOneField(Contragent, on_delete=models.CASCADE,
-                                   blank=False, null=False, verbose_name='Заказчик')
+    customer = models.ForeignKey(ContentType, on_delete=models.DO_NOTHING)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(ct_field='customer', fk_field='object_id')
+
     products = models.ManyToManyField('ProductForOrder')
     address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')

@@ -1,11 +1,6 @@
 from rest_framework import serializers
 from .models import (
-    SimpleCustomers,
-    QRCode,
-    Order,
-    Contragent,
-    Contracts,
-    Product, ProductForOrder
+    SimpleCustomers, QRCode, Order, Contragent, Contracts, Product, ProductForOrder
 )
 
 
@@ -37,7 +32,7 @@ class ContractsSerializer(serializers.ModelSerializer):
 class ContragentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contragent
-        fields = ("id", "name", "real_name", "real_address",)
+        fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):
