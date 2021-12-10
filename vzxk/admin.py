@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    SimpleCustomers,
+    CustomRegistrationModel,
     Product,
     QRCode,
     Contragent,
@@ -8,7 +8,7 @@ from .models import (
     Contracts, ProductForOrder
 )
 
-admin.site.register(SimpleCustomers)
+admin.site.register(CustomRegistrationModel)
 admin.site.register(Product)
 admin.site.register(QRCode)
 admin.site.register(Contragent)

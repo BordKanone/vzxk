@@ -1,14 +1,12 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView
-from .models import (SimpleCustomers,
-                     QRCode,
+from .models import (QRCode,
                      Order,
                      Contragent,
                      Contracts,
                      Product,
                      ProductForOrder)
-from .serializers import (SimpleCustomersSerializer,
-                          SpecialCodeSerializer,
+from .serializers import (SpecialCodeSerializer,
                           OrderSerializer,
                           ProductSerializer,
                           ContractsSerializer,
@@ -21,16 +19,7 @@ from rest_framework import viewsets
 import datetime
 
 
-def index(request):
-    return render(request, 'index.html', {})
-
-
-class SimpleCustomerView(ListAPIView):
-    queryset = SimpleCustomers.objects.filter(id=2)
-    serializer_class = SimpleCustomersSerializer
-
-
-class SpecialCodeApiView(generics.ListCreateAPIView):
+class SpecialCodeApiView(viewsets.ModelViewSet):
     queryset = QRCode.objects.all()
     serializer_class = SpecialCodeSerializer
 

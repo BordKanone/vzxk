@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import (
-    SimpleCustomers, QRCode, Order, Contragent, Contracts, Product, ProductForOrder
+from .models import (QRCode, Order, Contragent, Contracts, Product, ProductForOrder
 )
 
 
@@ -8,12 +7,6 @@ class SpecialCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = QRCode
         fields = ('qr_code',)
-
-
-class SimpleCustomersSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SimpleCustomers
-        fields = ('id', 'first_name', 'last_name', 'three_name', 'avatar', 'about')
 
 
 class ProductSerializer(serializers.ModelSerializer):
