@@ -9,7 +9,7 @@ from rest_framework.exceptions import ValidationError
 
 class CustomRegistrationModel(AbstractUser):
     CUSTOMERS_TYPE_CHOICES = (
-        ('contragent','Контрагент'),
+        ('contragent', 'Контрагент'),
         ('simple_customer', 'Розничный покупатель'),
         ('employee', 'Сотрудник')
     )
@@ -33,8 +33,6 @@ class CustomRegistrationModel(AbstractUser):
             for key in (self.company, self.inn, self.ogrn, self.contract):
                 if key:
                     raise ValidationError(f'Поле {key} не должно быть заполнено для текущей учетной записи')
-
-
 
     class Meta:
         verbose_name = 'Розничный покупатель'
@@ -66,12 +64,9 @@ class Product(models.Model):
 
 
 class Contragent(AbstractUser):
-
     three_name = models.CharField(max_length=255, verbose_name='Отчество')
 
-
     address = models.TextField(verbose_name='Адрес')
-
 
     def __str__(self):
         return f'{self.company}'
