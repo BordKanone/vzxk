@@ -28,7 +28,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Наименование')
     code = models.OneToOneField(QRCode, on_delete=models.CASCADE, verbose_name='Штрих-код продукта')
     price = models.DecimalField(verbose_name='цена', max_digits=3, decimal_places=2,
-                                validators=[validators.MinValueValidator(limit_value=1.00, message='Неверная цена')])
+                                validators=[validators.MinValueValidator(limit_value=0.10, message='Неверная цена')])
 
     package = models.BooleanField(verbose_name='Упковка продукции', default=False)
 
