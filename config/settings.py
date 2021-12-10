@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'vzxk.CustomRegistrationModel'
+AUTH_USER_MODEL = 'vzxk.Customer'
 
 # Application definition
 

@@ -6,7 +6,7 @@ from django.core import validators
 from rest_framework.exceptions import ValidationError
 
 
-class CustomRegistrationModel(AbstractUser):
+class Customer(AbstractUser):
     CUSTOMERS_TYPE_CHOICES = (
         ('contragent', 'Контрагент'),
         ('simple_customer', 'Розничный покупатель'),
@@ -24,7 +24,7 @@ class CustomRegistrationModel(AbstractUser):
     contract = models.OneToOneField('Contracts', blank=True, null=True, on_delete=models.CASCADE)
 
     def clean(self):
-        if self.customers_type == 'Контрагент':
+        if self.customers_type == 'contragent':
             for key in (self.company, self.inn, self.ogrn, self.contract):
                 if not key:
                     raise ValidationError(f'Поле {key} должно быть заполнено')
@@ -32,10 +32,6 @@ class CustomRegistrationModel(AbstractUser):
             for key in (self.company, self.inn, self.ogrn, self.contract):
                 if key:
                     raise ValidationError(f'Поле {key} не должно быть заполнено для текущей учетной записи')
-
-    class Meta:
-        verbose_name = 'Розничный покупатель'
-        verbose_name_plural = 'Розничные покупатели'
 
 
 class QRCode(models.Model):
@@ -87,6 +83,8 @@ class Order(models.Model):
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
 
     def save(self, *args, **kwargs):
+        self.address_to = self.customer.address
+        self.number = self.products.numbers
         self.date_complete = datetime.datetime.now() + datetime.timedelta(days=3)
         super().save(*args, **kwargs)
 
