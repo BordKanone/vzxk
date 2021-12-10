@@ -4,13 +4,37 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core import validators
+from rest_framework.exceptions import ValidationError
 
 
-class SimpleCustomers(AbstractUser):
+class CustomRegistrationModel(AbstractUser):
+    CUSTOMERS_TYPE_CHOICES = (
+        ('contragent','Контрагент'),
+        ('simple_customer', 'Розничный покупатель'),
+        ('employee', 'Сотрудник')
+    )
+
     three_name = models.CharField(max_length=50, blank=True, verbose_name='Отчество')
     address = models.TextField(verbose_name='Адрес')
+    customers_type = models.CharField(max_length=25, choices=CUSTOMERS_TYPE_CHOICES, verbose_name='тип учетной записи')
     avatar = models.ImageField(upload_to='profile_pictures', blank=True, null=True, verbose_name='Фото профиля')
     about = models.CharField(max_length=100, blank=True, verbose_name='Описание')
+    company = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование организации')
+    inn = models.CharField(max_length=12, blank=True, null=True, verbose_name='ИНН')
+    ogrn = models.CharField(max_length=13, blank=True, null=True, verbose_name='ОГРН')
+    contract = models.OneToOneField('Contracts', blank=True, null=True, on_delete=models.CASCADE)
+
+    def clean(self):
+        if self.customers_type == 'Контрагент':
+            for key in (self.company, self.inn, self.ogrn, self.contract):
+                if not key:
+                    raise ValidationError(f'Поле {key} должно быть заполнено')
+        else:
+            for key in (self.company, self.inn, self.ogrn, self.contract):
+                if key:
+                    raise ValidationError(f'Поле {key} не должно быть заполнено для текущей учетной записи')
+
+
 
     class Meta:
         verbose_name = 'Розничный покупатель'
@@ -42,12 +66,12 @@ class Product(models.Model):
 
 
 class Contragent(AbstractUser):
-    company = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование организации')
+
     three_name = models.CharField(max_length=255, verbose_name='Отчество')
-    inn = models.CharField(max_length=12, verbose_name='ИНН')
-    ogrn = models.CharField(max_length=13, verbose_name='ОГРН')
+
+
     address = models.TextField(verbose_name='Адрес')
-    contract = models.OneToOneField('Contracts', on_delete=models.CASCADE)
+
 
     def __str__(self):
         return f'{self.company}'
