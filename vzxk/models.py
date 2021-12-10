@@ -8,34 +8,47 @@ from rest_framework.exceptions import ValidationError
 
 class Customer(AbstractUser):
     CUSTOMERS_TYPE_CHOICES = (
+        (None, 'Тип учетной записи'),
         ('contragent', 'Контрагент'),
         ('simple_customer', 'Розничный покупатель'),
         ('employee', 'Сотрудник')
     )
-
+    first_name = models.CharField(max_length=50, verbose_name='Имя')
+    last_name = models.CharField(max_length=50, verbose_name='Фамилия')
     three_name = models.CharField(max_length=50, blank=True, verbose_name='Отчество')
-    address = models.TextField(verbose_name='Адрес')
+    address = models.CharField(max_length=250, verbose_name='Адрес')
     customers_type = models.CharField(max_length=25, choices=CUSTOMERS_TYPE_CHOICES, verbose_name='тип учетной записи')
     avatar = models.ImageField(upload_to='profile_pictures', blank=True, null=True, verbose_name='Фото профиля')
     about = models.CharField(max_length=100, blank=True, verbose_name='Описание')
-    company = models.CharField(max_length=255, blank=False, null=False, verbose_name='Наименование организации')
+    company = models.CharField(max_length=255, blank=True, null=False, verbose_name='Наименование организации')
     inn = models.CharField(max_length=12, blank=True, null=True, verbose_name='ИНН')
     ogrn = models.CharField(max_length=13, blank=True, null=True, verbose_name='ОГРН')
     contract = models.OneToOneField('Contracts', blank=True, null=True, on_delete=models.CASCADE)
 
+    def get_username(self):
+        return f'{self.first_name} {self.last_name}'
+
     def clean(self):
-        if self.customers_type == 'contragent':
+        if self.customers_type == 'contragent' or self.customers_type is None:
             for key in (self.company, self.inn, self.ogrn, self.contract):
                 if not key:
-                    raise ValidationError(f'Поле {key} должно быть заполнено')
+                    raise ValidationError('Не все поля заполнены для этого типа учетной записи')
         else:
             for key in (self.company, self.inn, self.ogrn, self.contract):
                 if key:
                     raise ValidationError(f'Поле {key} не должно быть заполнено для текущей учетной записи')
 
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
 
 class QRCode(models.Model):
     qr_code = models.CharField(max_length=14, verbose_name='Штрих-код')
+
+    class Meta:
+        verbose_name = 'Штрих-код'
+        verbose_name_plural = 'Штрих-коды'
 
     def __str__(self):
         return f'{self.qr_code}'
@@ -60,6 +73,7 @@ class Product(models.Model):
 
 class Contracts(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.DO_NOTHING)
+    contract_number = models.CharField(max_length=20, blank=True, verbose_name='Номер контракта')
     document = models.FileField(upload_to='contracts/%Y/%m/%d/', verbose_name='Файл договора')
 
     def __str__(self):
@@ -75,7 +89,7 @@ class Order(models.Model):
     customer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True,
                                     verbose_name='Заказчик')
     products = models.ManyToManyField('ProductForOrder')
-    address_to = models.CharField(max_length=255, blank=True, null=True, verbose_name='Адрес доставки')
+    address_to = models.CharField(max_length=100, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
                                                                                                           'заказа')
@@ -84,7 +98,6 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         self.address_to = self.customer.address
-        self.number = self.products.numbers
         self.date_complete = datetime.datetime.now() + datetime.timedelta(days=3)
         super().save(*args, **kwargs)
 
