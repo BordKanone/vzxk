@@ -43,7 +43,7 @@ class OrderApiView(viewsets.ModelViewSet):
         print(f'\n\n\n\n requset.user {request.user.id} \n\n\n\n')
         customer = Customer.objects.get(pk=request.user.id)
         address_to = customer.address
-        new_order = Order.objects.create(customer=customer, address_to=address_to)
+        new_order = Order.objects.create(customer_id=request.user.id, address_to=address_to)
 
         total_price = 0
         numbers = 0

@@ -86,12 +86,12 @@ class Contracts(models.Model):
 
 
 class Order(models.Model):
-    customer = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, null=True, blank=True,
-                                    verbose_name='Заказчик')
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False, on_delete=models.DO_NOTHING,
+                                 null=True, blank=True, verbose_name='Заказчик')
     products = models.ManyToManyField('ProductForOrder')
     address_to = models.CharField(max_length=100, blank=True, null=True, verbose_name='Адрес доставки')
     number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
-    total_price = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Общая цена '
+    total_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Общая цена '
                                                                                                           'заказа')
     date_order = models.DateTimeField(auto_now=True, verbose_name='Дата поступления')
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
