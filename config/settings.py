@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -38,12 +37,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #3dth party library
+    'django.contrib.sites',
+    # 3dth party library
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     # general develop application
     'vzxk.apps.VzxkConfig',
 ]
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -59,7 +68,7 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-       'http://localhost:3000',
+    'http://localhost:3000',
 )
 
 ROOT_URLCONF = 'config.urls'
@@ -82,7 +91,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
@@ -92,11 +100,10 @@ DATABASES = {
         'NAME': 'vzxk',
         'USER': 'bordkanone',
         'PASSWORD': '5ed903dFERBS',
-        'HOST' : '127.0.0.1',
-        'PORT' : '5432',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -116,6 +123,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -130,7 +146,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -140,7 +155,7 @@ STATIC_ROOT = BASE_DIR / 'STATIC'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
-STATICFILES_DIRS = ((BASE_DIR/ 'vzxk_ui/build/static'),)
+STATICFILES_DIRS = ((BASE_DIR / 'vzxk_ui/build/static'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

@@ -1,20 +1,28 @@
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView
+from dj_rest_auth.registration.views import RegisterView
 from .models import (QRCode,
                      Order,
                      Contracts,
                      Product,
-                     ProductForOrder)
+                     ProductForOrder,
+                     Customer)
 from .serializers import (SpecialCodeSerializer,
                           OrderSerializer,
                           ProductSerializer,
-                          ContractsSerializer)
+                          ContractsSerializer,
+                          CustomerSerializer,
+                          RegistrationSerializer)
 from rest_framework import generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_201_CREATED
 from rest_framework import viewsets
 import datetime
+
+
+class RegisterApiView(RegisterView):
+    serializer_class = RegistrationSerializer
 
 
 class SpecialCodeApiView(viewsets.ModelViewSet):
