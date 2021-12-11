@@ -14,6 +14,10 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = '__all__'
 
+class ContractsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contracts
+        fields = "__all__"
 
 class RegistrationSerializer(RegisterSerializer):
     first_name = serializers.CharField(max_length=50)
@@ -32,7 +36,7 @@ class RegistrationSerializer(RegisterSerializer):
 
         print(f'\n\n\n {data} \n\n\n')
 
-        if data.get('customers_type', '') == {'Контрагент'}:
+        if 'contragent' in data.get('customers_type', ''):
             for key in (data.get('company', ''), data.get('inn', ''), data.get('ogrn', ''), data.get('contract', '')):
                 if not key:
                     raise serializers.ValidationError('Не все поля заполнены для этого типа учетной записи')
@@ -43,27 +47,19 @@ class RegistrationSerializer(RegisterSerializer):
         return data
 
     def get_cleaned_data(self):
-        return {
-            'username': self.validated_data.get('username', ''),
-            'password1': self.validated_data.get('password1', ''),
-            'email': self.validated_data.get('email', ''),
-        }
-
-    def save(self, request):
-        adapter = get_adapter()
-        user = adapter.new_user(request)
-        self.cleaned_data = self.get_cleaned_data()
-        user = adapter.save_user(request, user, self, commit=False)
-        try:
-            adapter.clean_password(self.cleaned_data['password1'], user=user)
-        except DjangoValidationError as exc:
-            raise serializers.ValidationError(
-                detail=serializers.as_serializer_error(exc)
-            )
-        user.save()
-        self.custom_signup(request, user)
-        setup_user_email(request, user, [])
-        return user
+        data_dict = super().get_cleaned_data()
+        data_dict['first_name'] = self.validated_data.get('first_name', ''),
+        data_dict['last_name'] = self.validated_data.get('last_name', ''),
+        data_dict['three_name'] = self.validated_data.get('three_name', ''),
+        data_dict['address'] = self.validated_data.get('address', ''),
+        data_dict['customers_type'] = self.validated_data.get('customers_type', ''),
+        data_dict['avatar'] = self.validated_data.get('avatar', ''),
+        data_dict['about'] = self.validated_data.get('about', ''),
+        data_dict['company'] = self.validated_data.get('company', ''),
+        data_dict['inn'] = self.validated_data.get('inn', ''),
+        data_dict['ogrn'] = self.validated_data.get('ogrn', ''),
+        data_dict['contract'] = self.validated_data.get('contract', '')
+        return data_dict
 
 
 class SpecialCodeSerializer(serializers.ModelSerializer):
@@ -78,10 +74,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ContractsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contracts
-        fields = "__all__"
+
 
 
 class OrderSerializer(serializers.ModelSerializer):

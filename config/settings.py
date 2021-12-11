@@ -52,7 +52,13 @@ INSTALLED_APPS = [
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'vzxk.serializers.RegistrationSerializer',
+}
+
 SITE_ID = 1
+
+ACCOUNT_ADAPTER = 'vzxk.adapter.CustomAccountAdapter'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
