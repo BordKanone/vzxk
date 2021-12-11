@@ -2,6 +2,7 @@ from abc import ABC
 
 from allauth.account.adapter import get_adapter
 from allauth.account.utils import setup_user_email
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.core.exceptions import ValidationError as DjangoValidationError
 from dj_rest_auth.registration.serializers import RegisterSerializer
@@ -14,10 +15,12 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = '__all__'
 
+
 class ContractsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contracts
         fields = "__all__"
+
 
 class RegistrationSerializer(RegisterSerializer):
     first_name = serializers.CharField(max_length=50)
@@ -72,9 +75,6 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
-
-
-
 
 
 class OrderSerializer(serializers.ModelSerializer):

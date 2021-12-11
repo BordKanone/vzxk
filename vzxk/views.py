@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView
 from dj_rest_auth.registration.views import RegisterView
@@ -31,9 +32,6 @@ class SpecialCodeApiView(viewsets.ModelViewSet):
 
 
 class OrderApiView(viewsets.ModelViewSet):
-    """
-    TODO: Rebuilt contragent relation
-    """
     serializer_class = OrderSerializer
 
     def get_queryset(self):
@@ -42,9 +40,10 @@ class OrderApiView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = request.data
-        deliver_address = data['contragent']['real_address']
-        contragent = data['contragent']['id']
-        new_order = Order.objects.create(customer=contragent, address_to=deliver_address)
+        print(f'\n\n\n\n requset.user {request.user.id} \n\n\n\n')
+        customer = Customer.objects.get(pk=request.user.id)
+        address_to = customer.address
+        new_order = Order.objects.create(customer=customer, address_to=address_to)
 
         total_price = 0
         numbers = 0

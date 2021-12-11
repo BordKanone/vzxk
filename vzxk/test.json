@@ -1,9 +1,4 @@
 {
-  "contragent": {
-      "id": 1,
-      "real_name": "Лаврентьев Михаил Андреевич",
-      "real_address": "47 Дмитровское шоссе"
-  },
   "products": [
     {"id":  1, "number": 20},
     {"id":  1, "number": 5},
