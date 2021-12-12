@@ -13,7 +13,7 @@ from .models import (QRCode, Order, Contracts, Product, ProductForOrder, Custome
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = ('username', 'address', 'first_name', 'last_name', 'three_name' )
 
 
 class ContractsSerializer(serializers.ModelSerializer):
@@ -40,7 +40,7 @@ class RegistrationSerializer(RegisterSerializer):
         print(f'\n\n\n {data} \n\n\n')
 
         if 'contragent' in data.get('customers_type', ''):
-            for key in (data.get('company', ''), data.get('inn', ''), data.get('ogrn', ''), data.get('contract', '')):
+            for key in (data.get('company', ''), data.get('inn', ''), data.get('ogrn', '')):
                 if not key:
                     raise serializers.ValidationError('Не все поля заполнены для этого типа учетной записи')
         else:
@@ -77,14 +77,17 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-        fields = "__all__"
-        depth = 1
-
-
 class ProductForOrderSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
     class Meta:
         model = ProductForOrder
         fields = '__all__'
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    products = ProductForOrderSerializer(many=True)
+    customer = CustomerSerializer()
+
+    class Meta:
+        model = Order
+        fields = "__all__"
