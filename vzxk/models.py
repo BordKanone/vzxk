@@ -72,7 +72,6 @@ class Product(models.Model):
 
 
 class Contracts(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.DO_NOTHING)
     contract_number = models.CharField(max_length=20, blank=True, verbose_name='Номер контракта')
     document = models.FileField(upload_to='contracts/%Y/%m/%d/', verbose_name='Файл договора')
 
@@ -82,7 +81,6 @@ class Contracts(models.Model):
     class Meta:
         verbose_name = 'Договор'
         verbose_name_plural = 'Договора'
-        ordering = ('user',)
 
 
 class Order(models.Model):
