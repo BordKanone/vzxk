@@ -1,3 +1,5 @@
+from rest_framework import permissions
+
 from .models import (QRCode,
                      Order,
                      Contracts,
@@ -7,9 +9,11 @@ from .models import (QRCode,
 from .serializers import (SpecialCodeSerializer,
                           OrderSerializer,
                           ProductSerializer,
-                          ContractsSerializer,)
+                          ContractsSerializer, )
 from rest_framework.response import Response
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from rest_framework import viewsets
+from vzxk.permissions import IsCustomerOnly
 
 
 class SpecialCodeApiView(viewsets.ModelViewSet):
@@ -23,6 +27,12 @@ class OrderApiView(viewsets.ModelViewSet):
     def get_queryset(self):
         order = Order.objects.all()
         return order
+
+    def list(self, request, *args, **kwargs):
+        customer = request.user.id
+        orders = Order.objects.filter(customer_id=customer)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=HTTP_200_OK)
 
     def create(self, request, *args, **kwargs):
         data = request.data
@@ -45,6 +55,18 @@ class OrderApiView(viewsets.ModelViewSet):
 
         serializer = OrderSerializer(new_order)
         return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            permission_classes = [IsCustomerOnly]
+        elif self.action == 'destroy':
+            permission_classes = [permissions.IsAdminUser]
+        elif self.action == 'list':
+            permission_classes = [IsCustomerOnly]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+
+        return [permission() for permission in permission_classes]
 
 
 class ProductApiView(viewsets.ModelViewSet):
