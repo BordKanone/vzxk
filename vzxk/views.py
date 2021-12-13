@@ -24,6 +24,9 @@ class SpecialCodeApiView(viewsets.ModelViewSet):
 class OrderApiView(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
 
+    TOTAL_PRICE = 0
+    NUMBERS = 0
+
     def get_queryset(self):
         order = Order.objects.all()
         return order
@@ -40,29 +43,44 @@ class OrderApiView(viewsets.ModelViewSet):
         address_to = customer.address
         new_order = Order.objects.create(customer_id=request.user.id, address_to=address_to)
 
-        total_price = 0
-        numbers = 0
         for product in data['products']:
-            product_obj = Product.objects.get(pk=product['id'])
-            product_for_order = ProductForOrder.objects.create(product=product_obj, numbers=product['number'])
-            total_price += (product_obj.price * product['number'])
-            numbers += product['number']
-            new_order.total_price = total_price
-            new_order.number = numbers
+            product_obj = Product.objects.get(pk=product['product_id'])
+            product_for_order = ProductForOrder.objects.create(product=product_obj,
+                                                               quantity=product['quantity'])
+            self.TOTAL_PRICE += (product_obj.price * product['quantity'])
+            self.NUMBERS += product['quantity']
+            new_order.total_price = self.TOTAL_PRICE
+            new_order.total_quantity = self.NUMBERS
             new_order.products.add(product_for_order)
 
         new_order.save()
-
         serializer = OrderSerializer(new_order)
         return Response(serializer.data)
 
+    def update(self, request, *args, **kwargs):
+
+        order_obj = self.get_object()
+        print(f'\n\n\n {order_obj.products_set()} \n\n')
+        order_obj.products_set = []
+
+        for product in request.data['products']:
+            product_obj = Product.objects.get(pk=product['product_id'])
+            product_for_order = ProductForOrder.objects.create(product=product_obj,
+                                                               quantity=product['quantity'])
+            self.TOTAL_PRICE += (product_obj.price * product['quantity'])
+            self.NUMBERS += product['quantity']
+            order_obj.total_price = self.TOTAL_PRICE
+            order_obj.total_quantity = self.NUMBERS
+            order_obj.products.add(product_for_order)
+        order_obj.save()
+        serializer = OrderSerializer(order_obj)
+        return Response(serializer.data)
+
     def get_permissions(self):
-        if self.action == 'retrieve':
+        if self.action in ('retrieve', 'list', 'update'):
             permission_classes = [IsCustomerOnly]
         elif self.action == 'destroy':
             permission_classes = [permissions.IsAdminUser]
-        elif self.action == 'list':
-            permission_classes = [IsCustomerOnly]
         else:
             permission_classes = [permissions.IsAuthenticated]
 

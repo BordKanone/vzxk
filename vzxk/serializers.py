@@ -13,7 +13,7 @@ from .models import (QRCode, Order, Contracts, Product, ProductForOrder, Custome
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ('username', 'address', 'first_name', 'last_name', 'three_name' )
+        fields = ('username', 'first_name', 'last_name', 'three_name' )
 
 
 class ContractsSerializer(serializers.ModelSerializer):
@@ -78,7 +78,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class ProductForOrderSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    product = ProductSerializer(read_only=True)
     class Meta:
         model = ProductForOrder
         fields = '__all__'
@@ -87,7 +87,19 @@ class ProductForOrderSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     products = ProductForOrderSerializer(many=True)
     customer = CustomerSerializer(read_only=True)
+    address_to = serializers.CharField(read_only=True)
+
+    # def update(self, instance, validated_data):
+    #
+    #     for product in validated_data['products']:
+    #
+    #         print(f'\n\n\n\nПродукт{product}\n\n\n\n')
+    #
+    #     instance.products.add(product)
+    #     instance.save()
+    #     return instance
 
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = ('id', 'customer', 'address_to', 'products')
+        read_only_fields = ('address_to', 'total_quantity', 'total_price')

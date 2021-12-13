@@ -84,15 +84,25 @@ class Contracts(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = (
+        ('active', 'Активный'),
+        ('process', 'В обработке'),
+        ('completed', 'Завершенный'),
+        ('aborted', 'Отмененный'),
+        ('returned', 'Возврат'),
+    )
+
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False, on_delete=models.DO_NOTHING,
                                  null=True, blank=True, verbose_name='Заказчик')
     products = models.ManyToManyField('ProductForOrder')
     address_to = models.CharField(max_length=100, blank=True, null=True, verbose_name='Адрес доставки')
-    number = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
+    total_quantity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
     total_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Общая цена '
-                                                                                                          'заказа')
+                                                                                  'заказа')
     date_order = models.DateTimeField(auto_now=True, verbose_name='Дата поступления')
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
+    order_status = models.CharField(max_length=25, null=False, blank=False, choices=STATUS_CHOICES,
+                                    default=STATUS_CHOICES[1][1])
 
     def save(self, *args, **kwargs):
         self.address_to = self.customer.address
@@ -110,4 +120,4 @@ class Order(models.Model):
 
 class ProductForOrder(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    numbers = models.PositiveIntegerField()
+    quantity = models.PositiveIntegerField()
