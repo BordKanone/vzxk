@@ -57,7 +57,7 @@ class QRCode(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Наименование')
     code = models.OneToOneField(QRCode, on_delete=models.CASCADE, verbose_name='Штрих-код продукта')
-    price = models.DecimalField(verbose_name='цена', max_digits=3, decimal_places=2,
+    price = models.DecimalField(verbose_name='цена', max_digits=8, decimal_places=5,
                                 validators=[validators.MinValueValidator(limit_value=0.10, message='Неверная цена')])
 
     package = models.BooleanField(verbose_name='Упковка продукции', default=False)
@@ -69,6 +69,12 @@ class Product(models.Model):
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
         ordering = ('name',)
+
+
+class ProductForOrder(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    order = models.ForeignKey("Order", on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
 
 
 class Contracts(models.Model):
@@ -94,10 +100,10 @@ class Order(models.Model):
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, unique=False, on_delete=models.DO_NOTHING,
                                  null=True, blank=True, verbose_name='Заказчик')
-    products = models.ManyToManyField('ProductForOrder')
+    products = models.ManyToManyField(Product, through=ProductForOrder)
     address_to = models.CharField(max_length=100, blank=True, null=True, verbose_name='Адрес доставки')
     total_quantity = models.PositiveIntegerField(blank=True, null=True, verbose_name='Количество продуктов')
-    total_price = models.PositiveIntegerField(blank=True, null=True, verbose_name='Общая цена '
+    total_price = models.DecimalField(max_digits=8, decimal_places=5, blank=True, null=True, verbose_name='Общая цена '
                                                                                   'заказа')
     date_order = models.DateTimeField(auto_now=True, verbose_name='Дата поступления')
     date_complete = models.DateTimeField(blank=True, null=True, verbose_name='Дата поступления в пункт выдачи')
@@ -116,8 +122,3 @@ class Order(models.Model):
         verbose_name = 'Заказ'
         verbose_name_plural = 'Заказы'
         ordering = ('date_order', 'date_complete')
-
-
-class ProductForOrder(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()

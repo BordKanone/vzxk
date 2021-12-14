@@ -46,7 +46,8 @@ class OrderApiView(viewsets.ModelViewSet):
         for product in data['products']:
             product_obj = Product.objects.get(pk=product['product_id'])
             product_for_order = ProductForOrder.objects.create(product=product_obj,
-                                                               quantity=product['quantity'])
+                                                               quantity=product['quantity'],
+                                                               order=new_order)
             self.TOTAL_PRICE += (product_obj.price * product['quantity'])
             self.NUMBERS += product['quantity']
             new_order.total_price = self.TOTAL_PRICE
@@ -60,18 +61,19 @@ class OrderApiView(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
 
         order_obj = self.get_object()
-        print(f'\n\n\n {order_obj.products_set()} \n\n')
-        order_obj.products_set = []
+        order_obj.products.clear()
 
         for product in request.data['products']:
             product_obj = Product.objects.get(pk=product['product_id'])
             product_for_order = ProductForOrder.objects.create(product=product_obj,
-                                                               quantity=product['quantity'])
+                                                               quantity=product['quantity'],
+                                                               order=self.get_object())
             self.TOTAL_PRICE += (product_obj.price * product['quantity'])
             self.NUMBERS += product['quantity']
             order_obj.total_price = self.TOTAL_PRICE
             order_obj.total_quantity = self.NUMBERS
-            order_obj.products.add(product_for_order)
+            order_obj.products.add(product_obj)
+
         order_obj.save()
         serializer = OrderSerializer(order_obj)
         return Response(serializer.data)
