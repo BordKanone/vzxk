@@ -43,20 +43,9 @@ class Customer(AbstractUser):
         verbose_name_plural = 'Пользователи'
 
 
-class QRCode(models.Model):
-    qr_code = models.CharField(max_length=14, verbose_name='Штрих-код')
-
-    class Meta:
-        verbose_name = 'Штрих-код'
-        verbose_name_plural = 'Штрих-коды'
-
-    def __str__(self):
-        return f'{self.qr_code}'
-
-
 class Product(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name='Наименование')
-    code = models.OneToOneField(QRCode, on_delete=models.CASCADE, verbose_name='Штрих-код продукта')
+    code = models.CharField(max_length=14, verbose_name='Штрих-код')
     price = models.DecimalField(verbose_name='цена', max_digits=8, decimal_places=5,
                                 validators=[validators.MinValueValidator(limit_value=0.10, message='Неверная цена')])
 

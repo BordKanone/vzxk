@@ -14,6 +14,7 @@ pytz = "*"
 django-rest-auth = "*"
 dj-rest-auth = "*"
 django-allauth = "*"
+django-import-export = "*"
 
 [dev-packages]
 

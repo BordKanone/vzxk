@@ -1,24 +1,17 @@
 from rest_framework import permissions
 
-from .models import (QRCode,
-                     Order,
+from .models import (Order,
                      Contracts,
                      Product,
                      ProductForOrder,
                      Customer)
-from .serializers import (SpecialCodeSerializer,
-                          OrderSerializer,
+from .serializers import (OrderSerializer,
                           ProductSerializer,
                           ContractsSerializer, )
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from rest_framework import viewsets
 from vzxk.permissions import IsCustomerOnly
-
-
-class SpecialCodeApiView(viewsets.ModelViewSet):
-    queryset = QRCode.objects.all()
-    serializer_class = SpecialCodeSerializer
 
 
 class OrderApiView(viewsets.ModelViewSet):
@@ -52,7 +45,7 @@ class OrderApiView(viewsets.ModelViewSet):
             self.NUMBERS += product['quantity']
             new_order.total_price = self.TOTAL_PRICE
             new_order.total_quantity = self.NUMBERS
-            new_order.products.add(product_for_order)
+            new_order.products.add(product_obj)
 
         new_order.save()
         serializer = OrderSerializer(new_order)

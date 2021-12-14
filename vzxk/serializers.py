@@ -6,8 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.core.exceptions import ValidationError as DjangoValidationError
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from .models import (QRCode, Order, Contracts, Product, ProductForOrder, Customer
-                     )
+from .models import (Order, Contracts, Product, ProductForOrder, Customer)
 
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -65,12 +64,6 @@ class RegistrationSerializer(RegisterSerializer):
         return data_dict
 
 
-class SpecialCodeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QRCode
-        fields = ('qr_code',)
-
-
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -79,7 +72,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class ProductForOrderSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='product.name')
-    code = SpecialCodeSerializer(source='product.code')
+    code = serializers.ReadOnlyField(source='product.code')
     price = serializers.ReadOnlyField(source='product.price')
     package = serializers.ReadOnlyField(source='product.package')
 

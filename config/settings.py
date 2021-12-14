@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # 3dth party library
     'rest_framework',
     'rest_framework.authtoken',
+    'import_export',
     'corsheaders',
     'dj_rest_auth',
     'dj_rest_auth.registration',
