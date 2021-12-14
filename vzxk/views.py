@@ -19,9 +19,13 @@ from vzxk.permissions import IsCustomerOnly
 class SpecialCodeApiView(viewsets.ModelViewSet):
     queryset = QRCode.objects.all()
     serializer_class = SpecialCodeSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class OrderApiView(viewsets.ModelViewSet):
+    """
+    TOOD: Check destroy alghoritm
+    """
     serializer_class = OrderSerializer
 
     TOTAL_PRICE = 0
@@ -60,8 +64,7 @@ class OrderApiView(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
 
         order_obj = self.get_object()
-        print(f'\n\n\n {order_obj.products_set()} \n\n')
-        order_obj.products_set = []
+        order_obj.products.clear()
 
         for product in request.data['products']:
             product_obj = Product.objects.get(pk=product['product_id'])
