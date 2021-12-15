@@ -5,6 +5,8 @@ from django.contrib.auth.models import AbstractUser
 from django.core import validators
 from rest_framework.exceptions import ValidationError
 
+from vzxk.src.services import get_product_image_upload_path
+
 
 class Customer(AbstractUser):
     CUSTOMERS_TYPE_CHOICES = (
@@ -50,6 +52,7 @@ class Product(models.Model):
                                 validators=[validators.MinValueValidator(limit_value=0.10, message='Неверная цена')])
 
     package = models.BooleanField(verbose_name='Упковка продукции', default=False)
+    picture = models.ImageField(upload_to=get_product_image_upload_path, null=True)
 
     def __str__(self):
         return f'{self.name}'

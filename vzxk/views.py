@@ -38,9 +38,9 @@ class OrderApiView(viewsets.ModelViewSet):
 
         for product in data['products']:
             product_obj = Product.objects.get(pk=product['product_id'])
-            product_for_order = ProductForOrder.objects.create(product=product_obj,
-                                                               quantity=product['quantity'],
-                                                               order=new_order)
+            ProductForOrder.objects.create(product=product_obj,
+                                           quantity=product['quantity'],
+                                           order=new_order)
             self.TOTAL_PRICE += (product_obj.price * product['quantity'])
             self.NUMBERS += product['quantity']
             new_order.total_price = self.TOTAL_PRICE
@@ -58,9 +58,9 @@ class OrderApiView(viewsets.ModelViewSet):
 
         for product in request.data['products']:
             product_obj = Product.objects.get(pk=product['product_id'])
-            product_for_order = ProductForOrder.objects.create(product=product_obj,
-                                                               quantity=product['quantity'],
-                                                               order=self.get_object())
+            ProductForOrder.objects.create(product=product_obj,
+                                           quantity=product['quantity'],
+                                           order=self.get_object())
             self.TOTAL_PRICE += (product_obj.price * product['quantity'])
             self.NUMBERS += product['quantity']
             order_obj.total_price = self.TOTAL_PRICE

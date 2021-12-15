@@ -19,12 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-sgkwkhl#$p6@+q^eqjhg$z9k5*12tk1=1il(+ab__3h!17+)4n'
+SECRET_KEY = os.environ.get("SECRET_KEY", 'django-insecure-sgkwkhl#$p6@+q^eqjhg$z9k5*12tk1=1il(+ab__3h!17+)4n')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.environ.get('DEBUG')))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', '127.0.0.1').split(' ')
 
 AUTH_USER_MODEL = 'vzxk.Customer'
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'import_export',
     'corsheaders',
+    'drf_yasg',
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'allauth',
@@ -64,19 +65,22 @@ ACCOUNT_ADAPTER = 'vzxk.adapter.CustomAccountAdapter'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',
-)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1",
+]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -103,12 +107,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'vzxk',
-        'USER': 'bordkanone',
-        'PASSWORD': '5ed903dFERBS',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'ENGINE': os.environ.get('POSTGRES_ENGINE'),
+        'NAME': os.environ.get('POSTGRES_DB'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('POSTGRES_HOST'),
+        'PORT': os.environ.get('POSTGRES_PORT'),
     }
 }
 
@@ -162,7 +166,15 @@ STATIC_ROOT = BASE_DIR / 'STATIC'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
-STATICFILES_DIRS = ((BASE_DIR / 'vzxk_ui/build/static'),)
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
